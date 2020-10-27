@@ -1,0 +1,25 @@
+{
+  "name": "homework10-employeetracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/B-Dionysus/homework10-EmployeeTracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/B-Dionysus/homework10-EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/B-Dionysus/homework10-EmployeeTracker#readme"
+}
