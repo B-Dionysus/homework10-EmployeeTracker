@@ -1,22 +1,38 @@
-// Dependencies
-var express = require("express");
+const inquirer=require("inquirer");
+const connection=require("./connection.js");
 
+function init(){
+    
+  // Initiate MySQL Connection.
+  connection.connect(function(err) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+    console.log("connected as id " + connection.threadId);
+    mainMenu();
+  });
+}
 
-// Create express app instance.
-var app = express();
+function mainMenu(){
+    inquirer.prompt({
+        message:"Main Menu",
+        name:"menuChoice",
+        type:"list",
+        choices:["Add Employee", "Exit"]
+    }) .then(answers=>{
+        switch(answers.menuChoice){
+            case "Add Employee":
+            addEmployee();
+            break;
 
-// Set the port of our application
-// process.env.PORT lets the port be set by Heroku
-var PORT = process.env.PORT || 8080;
+            case "Exit":
+            process.exit();
+        }
+    });
+}
+function addEmployee(){
 
+}
 
-
-// Routes
-require("./routes/apiRoute.js")(app);
-
-// Start our server so that it can begin listening to client requests.
-app.listen(PORT, function() {
-  // Log (server-side) when our server has started
-  console.log("Server listening on: http://localhost:" + PORT);
-});
-
+init();
