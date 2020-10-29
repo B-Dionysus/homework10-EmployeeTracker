@@ -37,17 +37,17 @@ function mainMenu(){
         message:"Main Menu",
         name:"menuChoice",
         type:"list",
-        choices:["Add Employee", "Add Department", "Add Role","Update Employee Role", "Update Employee Manager", "View All Roles","View All Departments","View Employees by Manager", "View All Employees", "View Department Budgets", "Exit"]
+        choices:["Add Department", "Add Role","Add Employee", "Update Employee Role", "Update Employee Manager", "View All Roles","View All Departments","View Employees by Manager", "View All Employees", "View Department Budgets", "Exit"]
     }) .then(answers=>{
         switch(answers.menuChoice){
             case "Add Department":
                 addDepartment();
             break;
-            case "Add Employee":
-                db.loadManagers(addEmployeeRoles);
-            break;
             case "Add Role":
                 db.loadDepts(addRolePrompt);    
+            break;
+            case "Add Employee":
+                db.loadManagers(addEmployeeRoles);
             break;
             case "View All Roles":
                 db.loadRoles(showDepts);
@@ -105,7 +105,6 @@ function showBudgets(budgetArray){
 // pick a different manager for the selected employee
 function updateEmployeeManagerPrompt(array, id){
     // We get an array of manager objects 
-    console.log(array);
     const mChoice=[];
     for(m of array){
         let test={};
