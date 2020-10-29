@@ -59,8 +59,10 @@ function addRoleInfo(obj, callback){
         else callback();
     });  
 }
-function loadEmployees(callback){
-    let sql="select employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary from employee join role on role.id=employee.role_id join department on department.id=role.department_id order by employee.last_name;";
+function loadEmployees(callback, managerId=false){
+    let byManager="";
+    if(managerId) byManager="employee.manager_id=3 and ";
+    let sql="select employee.id as ID, employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as Position, department.name as Department, role.salary as Salary from employee join role on "+byManager+"role.id=employee.role_id join department on department.id=role.department_id order by employee.last_name;";
     connection.query(sql,function(err, res){
         if(err) console.log("Load employees error: "+err);
         else callback(res);

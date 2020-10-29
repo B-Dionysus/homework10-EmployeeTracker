@@ -15,7 +15,7 @@ function init(){
       console.error("error connecting: " + err.stack);
       return;
     }
-    console.log("connected as id " + connection.threadId);
+    console.log("connected as id " + connection.threadId+"\n\n");
     mainMenu();
   });
 }
@@ -25,7 +25,7 @@ function mainMenu(){
         message:"Main Menu",
         name:"menuChoice",
         type:"list",
-        choices:["Add Employee", "Add Department", "Add Role","Exit"]
+        choices:["Add Employee", "Add Department", "Add Role","View Employees by Manager", "View All Employees", "Exit"]
     }) .then(answers=>{
         switch(answers.menuChoice){
             case "Add Department":
@@ -37,10 +37,12 @@ function mainMenu(){
             case "Add Role":
                 db.loadDepts(addRolePrompt);    
             break;
+            case "View Employees by Manager":
+                db.loadManagers(showEmployeeByManager);
+            break;
             case "View All Employees":
                 db.loadEmployees(showEmployees);
             break;
-
             case "Exit":
             process.exit();
         }
@@ -48,19 +50,27 @@ function mainMenu(){
 }
 
 function showEmployees(employeeArray){
-    cTable(employeeArray);
+    console.table(employeeArray);
     mainMenu();
 }
+function showEmployeeByManager(managerArray){
+    let mChoice=[];
+    for(m of managerArray){
+        mChoice.push({name:`${m.first_name} ${m.last_name}, Manager of ${m.name}`});
+    }
+    inquirer.prompt({
+        message:"Please choose manager:",
+        name:"mChoice",
+        type:"list",
+        choices:mChoice
+    }).then(function(answers){
+        db.loadEmployees(showEmployees, answers.mChoice)
+    });
+}
 
-// function addEmployeeManagers(){
-//     db.loadManagers(addEmployeeRoles);
-// }
 function addEmployeeRoles(managers){
     db.loadRoles(addEmployeePrompt, managers);
 }
-// function addRoleDepartments(){
-//     db.loadDepts(addRolePrompt);    
-// }
 function addRolePrompt(depts){
     let dChoice=[];
     for(d of depts){
