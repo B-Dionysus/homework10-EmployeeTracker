@@ -8,7 +8,7 @@ const connection=require("./connection.js");
 function loadManagers(callback, id=""){
 
     // Get a list of every employee that has a role_id that is a manager role--i.e., all of the managers
-    let meSpeakWithAManager="select employee.first_name, employee.last_name, employee.id, department.name from employee join role ON role.id=employee.id and role.title='manager' join department on role.department_id=department.id;";
+    let meSpeakWithAManager="select employee.first_name, employee.last_name, employee.id, department.name from employee join role ON role.id=employee.role_id and role.title='manager' join department on role.department_id=department.id;";
     connection.query(meSpeakWithAManager, function(err, result) {
         if(err) console.log(err);
         else{
@@ -32,14 +32,7 @@ function loadRoles(callback, prevArray=[]){
     
     connection.query("select role.id as ID, role.title as Position, department.name as Department from role join department on role.department_id=department.id;", function(err, result) {
         if(err) console.log("LoadRoles: "+err);
-        else{
-            if(result.length===0){
-                console.log("Please enter at least one role.");
-                // Does this work? I wonder if this works....
-                mainMenu();
-            }
-            else callback(result, prevArray);
-        }
+        else callback(result, prevArray);        
     });
 }
 function addEmployeeInfo(obj, callback){
