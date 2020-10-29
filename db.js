@@ -1,5 +1,8 @@
 const connection=require("./connection.js");
 
+// Note: I've left some comments in here, but mostly this is a pretty self-explanatory ORM. For a full overview of the
+// flow and logic of the app, please review the comments in app.js.
+
 
 // Calls callback() with an array of every manager's first name, last name, department name, and id.
 function loadManagers(callback, id=""){

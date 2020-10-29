@@ -14,7 +14,7 @@ function init(){
     }    
     else {
         // Once we have successfully connected to the database, clear the screen
-        // And pop up a friend title screen
+        // and pop up a friend title screen
         console.clear();
         figlet("Employee Tracker", (err,data)=>{
             if(err) console.log("Figlet Error: "+err);
@@ -92,11 +92,17 @@ function showBudgets(budgetArray){
     console.table(budgetArray);
     mainMenu();
 }
+
 // **========================================================**
 // *                                                          * 
-// *       UPDATE Functions                                   * 
+// *       POST Functions                                     * 
 // *                                                          * 
 // **========================================================**
+
+// db.loadEmployees get a list of all the employees, and pass it to updateEmployeeManagerPickEmp()
+// after updateEmployeeManagerPickEmp gets the user to choose an employee, it calls db.loadManagers
+// this passes the user's chosen employee id and an array of all managers here, and the user can
+// pick a different manager for the selected employee
 function updateEmployeeManagerPrompt(array, id){
     // We get an array of manager objects 
     console.log(array);
@@ -120,13 +126,10 @@ function updateEmployeeManagerPrompt(array, id){
         }
     )
 }
-
-
-// **========================================================**
-// *                                                          * 
-// *       POST Functions                                     * 
-// *                                                          * 
-// **========================================================**
+// db.loadEmployees get a list of all the employees, and pass it to updateEmployeeRolePickEmp()
+// after updateEmployeeRolePickEmp gets the user to choose an employee, it calls db.loadRoles.
+// this passes the user's chosen employee id and an array of all roles here, and the user can
+// pick a different role for the selected employee
 function updateEmployeeRolePrompt(array, id){
     // We get an array of role objects
     const rChoice=[];
@@ -149,6 +152,8 @@ function updateEmployeeRolePrompt(array, id){
         }
     )
 }
+
+// The user enters a new department, which is sent to db.addDepartmentInto to get entered into the database
 function addDepartment(){
     inquirer.prompt(
         {
@@ -163,7 +168,8 @@ function addDepartment(){
         db.addDepartmentInfo(answers, mainMenu);
     });
 }
-
+// db.loadRoles sends us an array of all of the departments. Then the user enters a new role, and selects the 
+// department with which it is affiliated
 function addRolePrompt(depts){
     
     console.clear();
@@ -197,6 +203,10 @@ function addRolePrompt(depts){
     });
 }
 
+// db.loadManagers passes an array of all managers to addEmployeeRoles, which calls db.loadRoles
+// This returns an array of all of the roles, as well as the array of managers, to addEmployeePrompt, here
+// Once the user enters the emplyee name and selects and role and a manager, this is passed to db.addEmployeeInfo
+// To get sent to the database.
 function addEmployeePrompt(roles, managers){
     // We get an array of manager objects and an array of role objects
 
@@ -252,12 +262,14 @@ function addEmployeePrompt(roles, managers){
 }
 // **========================================================**
 // *                                                          * 
-// *       Prep Functions                                     * 
+// *       Prep Functions / Middleware                        * 
 // *          Taking DB data and providing it to another      * 
 // *          function, which will then make a db call        * 
 // *                                                          * 
 // **========================================================**
 
+// This takes the array of all employees and asks the user to choose one. It passes that ID to
+// loadManagers, and tells it to call updateEmployeeManagerPrompt when it's done
 function updateEmployeeManagerPickEmp(empArray){
     let eChoice=[]; 
     for(e of empArray){
@@ -274,6 +286,8 @@ function updateEmployeeManagerPickEmp(empArray){
         db.loadManagers(updateEmployeeManagerPrompt, answers);
     });
 }
+// This takes the array of all employees and asks the user to choose one. It passes that ID to
+// loadRoles, and tells it to call updateEmployeeRolePrompt when it's done
 function updateEmployeeRolePickEmp(empArray){
     let eChoice=[]; 
     for(e of empArray){
@@ -290,9 +304,8 @@ function updateEmployeeRolePickEmp(empArray){
         db.loadRoles(updateEmployeeRolePrompt, answers);
     });
 }
-
-
-
+// This takes the array of all managers and asks the user to choose one. It passes that ID to
+// loadEmployees, and tells it to call showEmployees when it's done
 function showEmployeeByManager(managerArray){
     let mChoice=[];
     for(m of managerArray){
@@ -307,11 +320,13 @@ function showEmployeeByManager(managerArray){
         db.loadEmployees(showEmployees, answers.mChoice)
     });
 }
-
+// This takes the array of all managers passes it to db.loadRoles, telling it to
+// call addEmployeePrompt when it's done
 function addEmployeeRoles(managers){
     
     console.clear();
     db.loadRoles(addEmployeePrompt, managers);
 }
 
+// Start everything off!
 init();

@@ -6,6 +6,8 @@ var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
+    // This is a temp password, so I'm not worried about exposing it in github.
+    // Soon I'll know how to use environment variables, instead!
     password: ")rWh0",
     database: "homework10"
   });
