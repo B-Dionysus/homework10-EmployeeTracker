@@ -2,14 +2,15 @@ const connection=require("./connection.js");
 
 
 // Calls callback() with an array of every manager's first name, last name, department name, and id.
-function loadManagers(callback){
+function loadManagers(callback, id=""){
 
-    // Get a list of every employee that has a role_id that is a manager role
+    // Get a list of every employee that has a role_id that is a manager role--i.e., all of the managers
     let meSpeakWithAManager="select employee.first_name, employee.last_name, employee.id, department.name from employee join role ON role.id=employee.id and role.title='manager' join department on role.department_id=department.id;";
     connection.query(meSpeakWithAManager, function(err, result) {
         if(err) console.log(err);
         else{
-            callback(result);
+            if(id) callback(result, id);
+            else callback(result);
         }
     });
 }
@@ -68,14 +69,24 @@ function loadEmployees(callback, managerId=false){
     });  
 }
 function updateEmployeeInfo(col, newId, empId, callback){
-        let q=connection.query("update employee set ??=? where id=?", [col, newId, empId],function(err, res){
-        if(err) console.log("Update Role SQL error: "+err);
+    let q=connection.query("update employee set ??=? where id=?", [col, newId, empId],function(err, res){
+    if(err) console.log("Update Role SQL error: "+err);
         else{
-            console.log(q.sql);
              callback();
         }
     }); 
 }
+
+function loadBudgets(callback){
+    let query="select department.name as Department, SUM(salary) as Expenditures from role join employee on employee.role_id=role.id join department on role.department_id=department.id group by role.department_id;"; 
+    connection.query(query,function(err, res){
+    if(err) console.log("Update Role SQL error: "+err);
+    else{
+        callback(res);
+    }
+    }); 
+}
+
 
 module.exports={
     loadManagers,
@@ -85,5 +96,6 @@ module.exports={
     loadDepts,
     addRoleInfo,
     loadEmployees,
-    updateEmployeeInfo
+    updateEmployeeInfo,
+    loadBudgets
 }
