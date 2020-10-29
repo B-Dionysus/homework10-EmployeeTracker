@@ -14,8 +14,7 @@ function loadManagers(callback){
     });
 }
 function loadDepts(callback){
-    let meSpeakWithAManager="select employee.first_name, employee.last_name, employee.id, department.name from employee join role ON role.id=employee.id and role.title='manager' join department on role.department_id=department.id;";
-    connection.query("select * from department", function(err, result) {
+    connection.query("select id as ID, name as Department from department", function(err, result) {
         if(err) console.log(err);
         else{
             callback(result);
@@ -27,7 +26,7 @@ function loadDepts(callback){
 // As well as an array that was passed in, if there was one.
 function loadRoles(callback, prevArray=[]){
     
-    connection.query("select role.id, role.title, department.name from role join department on role.department_id=department.id;", function(err, result) {
+    connection.query("select role.id as ID, role.title as Position, department.name as Department from role join department on role.department_id=department.id;", function(err, result) {
         if(err) console.log("LoadRoles: "+err);
         else{
             if(result.length===0){
@@ -35,7 +34,7 @@ function loadRoles(callback, prevArray=[]){
                 // Does this work? I wonder if this works....
                 mainMenu();
             }
-            else callback(prevArray, result);
+            else callback(result, prevArray);
         }
     });
 }
@@ -61,12 +60,21 @@ function addRoleInfo(obj, callback){
 }
 function loadEmployees(callback, managerId=false){
     let byManager="";
-    if(managerId) byManager="employee.manager_id=3 and ";
+    if(managerId) byManager="employee.manager_id="+managerId+" and ";
     let sql="select employee.id as ID, employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as Position, department.name as Department, role.salary as Salary from employee join role on "+byManager+"role.id=employee.role_id join department on department.id=role.department_id order by employee.last_name;";
     connection.query(sql,function(err, res){
         if(err) console.log("Load employees error: "+err);
         else callback(res);
     });  
+}
+function updateEmployeeInfo(col, newId, empId, callback){
+        let q=connection.query("update employee set ??=? where id=?", [col, newId, empId],function(err, res){
+        if(err) console.log("Update Role SQL error: "+err);
+        else{
+            console.log(q.sql);
+             callback();
+        }
+    }); 
 }
 
 module.exports={
@@ -76,5 +84,6 @@ module.exports={
     addDepartmentInfo,
     loadDepts,
     addRoleInfo,
-    loadEmployees
+    loadEmployees,
+    updateEmployeeInfo
 }
