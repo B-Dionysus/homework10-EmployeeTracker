@@ -1,6 +1,7 @@
 const inquirer=require("inquirer");
 const connection=require("./connection.js");
 const db=require("./db.js");
+const cTable=require("console.table");
 const managers=[];
 const roles=[];
 const departments=[];
@@ -24,14 +25,20 @@ function mainMenu(){
         message:"Main Menu",
         name:"menuChoice",
         type:"list",
-        choices:["Add Employee", "Exit"]
+        choices:["Add Employee", "Add Department", "Add Role","Exit"]
     }) .then(answers=>{
         switch(answers.menuChoice){
+            case "Add Department":
+                addDepartment();
+            break;
             case "Add Employee":
-                addEmployeeManagers();
+                db.loadManagers(addEmployeeRoles);
             break;
             case "Add Role":
-                addRoleDepartments();
+                db.loadDepts(addRolePrompt);    
+            break;
+            case "View All Employees":
+                db.loadEmployees(showEmployees);
             break;
 
             case "Exit":
@@ -39,13 +46,65 @@ function mainMenu(){
         }
     });
 }
-function addEmployeeManagers(){
-    db.loadManagers(addEmployeeRoles);
+
+function showEmployees(employeeArray){
+    cTable(employeeArray);
+    mainMenu();
 }
+
+// function addEmployeeManagers(){
+//     db.loadManagers(addEmployeeRoles);
+// }
 function addEmployeeRoles(managers){
     db.loadRoles(addEmployeePrompt, managers);
 }
+// function addRoleDepartments(){
+//     db.loadDepts(addRolePrompt);    
+// }
+function addRolePrompt(depts){
+    let dChoice=[];
+    for(d of depts){
+        dChoice.push({name:d.name, value:d.id});
+    }
+    inquirer.prompt([
+        {
+            message:"Please enter the role title:",
+            type:"input",
+            name:"title",
+            validate:function(value){if(value.length>0)return true; else return "Please enter a string.";}
+        },
+        {
+            message:"Please choose the affiliated department.",
+            type:"list",
+            name:"deptChoice",
+            choices:dChoice
+        },
+        {
+            message:"Please the salary:",
+            type:"input",
+            name:"salary",
+            validate:function(value){console.log(parseInt(value)); if(isNaN(parseInt(value))) return "Please enter numerical digits only."; else return true;}
+        }
+    ])
+    .then(function(answers){
+        db.addRoleInfo(answers, mainMenu);
+    });
+}
 
+
+
+function addDepartment(){
+    inquirer.prompt(
+        {
+            message:"Please enter a name for this new department:",
+            name:"deptName",
+            type:"input",
+            validate:function(value){if(value.length>0)return true; else return "Please enter a string.";}
+        }
+    ) .then(function(answers){
+        db.addDepartmentInfo(answers, mainMenu);
+    });
+}
 
 function addEmployeePrompt(managers, roles){
     // We get an array of manager objects and an array of role objects
